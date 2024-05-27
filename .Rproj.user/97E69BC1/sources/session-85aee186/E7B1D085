@@ -1,0 +1,24 @@
+{
+    "id": "E7B1D085",
+    "path": "~/Projects/beluga-simulations/belugas.R",
+    "project_path": "belugas.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1716813066609.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1716812971,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1716812971,
+    "read_only": false,
+    "read_only_alternatives": []
+}
