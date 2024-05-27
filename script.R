@@ -105,8 +105,8 @@ plot_diversity <- function(results, Ne_start, Ne_hunted, census_ratio) {
       title = sprintf("starting Ne = %s, Ne = %s hunted per generation, Ne / census ratio = %s",
                       Ne_start, Ne_hunted, census_ratio),
       subtitle = paste0("linear regression p-value = ", format(df$lm[[1]][, "p.value"], digits = 2),
-                       ", R-squared = ", format(df$lm[[1]][, "r.squared"], digits = 2),
-                       ", slope = ", format(df$lm[[1]][, "slope"], digits = 2))
+                        ", R-squared = ", format(df$lm[[1]][, "r.squared"], digits = 2),
+                        ", slope = ", format(df$lm[[1]][, "slope"], digits = 2))
     )
 }
 
@@ -172,6 +172,8 @@ results <- mclapply((1:nrow(grid)), function(i) {
 
 results_df <- bind_rows(results)
 
+saveRDS(results_df, "results_df.rds")
+
 unique(results_df$Ne_start)
 unique(results_df$Ne_hunted)
 unique(results_df$census_ratio)
@@ -199,6 +201,6 @@ ggplot(df, aes(time, pi, group = time)) +
     title = sprintf("starting Ne = %s, %s hunted per generation)",
                     Ne_start, N_hunted),
     subtitle = paste0("linear regression p-value = ", format(df_lm[, "p.value"], digits = 2),
-                     ", R-squared = ", format(df_lm[, "r.squared"], digits = 2),
-                     ", slope = ", format(df_lm[, "slope"], digits = 2))
+                      ", R-squared = ", format(df_lm[, "r.squared"], digits = 2),
+                      ", slope = ", format(df_lm[, "slope"], digits = 2))
   )
