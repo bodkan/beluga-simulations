@@ -7,6 +7,7 @@ library(dplyr)
 library(broom)
 library(tidyr)
 library(parallel)
+library(cowplot)
 
 NE_START <- c(10e3, 20e3, 30e3, 40e3)
 NE_HUNTED <- c(100, 250, 500, 750, 1000, 1500, 2000, 3000)
@@ -102,9 +103,9 @@ plot_diversity <- function(results, Ne_start, Ne_hunted, census_ratio) {
     labs(
       x = "time [years C.E.]",
       y = "nucleotide diversity",
-      title = sprintf("starting Ne = %s, Ne = %s hunted per generation, Ne / census ratio = %s",
+      title = sprintf("start Ne = %s, Ne = %s hunted, Ne / census ratio = %s",
                       Ne_start, Ne_hunted, census_ratio),
-      subtitle = paste0("linear regression p-value = ", format(df$lm[[1]][, "p.value"], digits = 2),
+      subtitle = paste0("regression p-value = ", format(df$lm[[1]][, "p.value"], digits = 2),
                         ", R-squared = ", format(df$lm[[1]][, "r.squared"], digits = 2),
                         ", slope = ", format(df$lm[[1]][, "slope"], digits = 2))
     )
@@ -112,10 +113,15 @@ plot_diversity <- function(results, Ne_start, Ne_hunted, census_ratio) {
 
 plot_demography <- function(results, Ne_start, Ne_hunted, census_ratio) {
   df <- filter(results, Ne_start == !!Ne_start, Ne_hunted == !!Ne_hunted, census_ratio == !!census_ratio)
-  if (nrow(df) == 0) stop("No simulation corresponding to the given parameter combination", call. = FALSE)
-  if (is.null(df$model[[1]])) stop("This parameter combination lead to an invalid model", call. = FALSE)
+  model <- df$model[[1]]
 
-  plot_model(df$model[[1]])
+  if (nrow(df) == 0) stop("No simulation corresponding to the given parameter combination", call. = FALSE)
+  if (is.null(model[[1]])) stop("This parameter combination lead to an invalid model", call. = FALSE)
+
+  start_N <- model %>% extract_parameters() %>% .$splits %>% .$N
+  end_N <- model %>% extract_parameters() %>% .$resizes %>% .[nrow(.), ] %>% .$N
+
+  plot_model(model) + ggtitle(paste0("start Ne = ", start_N, "\nend Ne = ", end_N))
 }
 
 plot_slopes <- function(results) {
@@ -127,7 +133,8 @@ plot_slopes <- function(results) {
     geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
     facet_grid(. ~ Ne_start) +
     guides(color = guide_legend("Ne / census\nsize ratio")) +
-    labs(x = "Ne hunted", y = "slope of the nucleotide diversity trajectory")
+    labs(x = "Ne hunted", y = "slope of linear model",
+         title = "Slope of the nucleotide diversity trajectory")
 }
 
 # test run ------------------------------------------------------------------------------------
@@ -174,6 +181,8 @@ results_df <- bind_rows(results)
 
 saveRDS(results_df, "results_df.rds")
 
+results_df <- readRDS("results_df.rds")
+
 unique(results_df$Ne_start)
 unique(results_df$Ne_hunted)
 unique(results_df$census_ratio)
@@ -185,22 +194,19 @@ unique(results_df$census_ratio)
 # > unique(results_df$census_ratio)
 # [1] 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 
-plot_slopes(results_df)
+list(Ne_start = 10000, Ne_hunted = 250, census_ratio = 1) %>%
+{
+  Ne_start = .$Ne_start
+  Ne_hunted = .$Ne_hunted
+  census_ratio = .$census_ratio
 
-plot_demography(results_df, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 0.1)
-plot_diversity(results_df, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 0.1)
-
-ggplot(df, aes(time, pi, group = time)) +
-  geom_jitter(size = 0.2, width = 5) +
-  geom_violin(trim = FALSE, alpha = 0.5) +
-  geom_smooth(aes(group = 1), method = "lm") +
-  stat_cor(aes(group = 1, label = paste(after_stat(rr.label), after_stat(p.label), sep = "~~~~"))) +
-  labs(
-    x = "time [years C.E.]",
-    y = "nucleotide diversity",
-    title = sprintf("starting Ne = %s, %s hunted per generation)",
-                    Ne_start, N_hunted),
-    subtitle = paste0("linear regression p-value = ", format(df_lm[, "p.value"], digits = 2),
-                      ", R-squared = ", format(df_lm[, "r.squared"], digits = 2),
-                      ", slope = ", format(df_lm[, "slope"], digits = 2))
+  plot_grid(
+    plot_slopes(results_df),
+    plot_grid(
+      plot_demography(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
+      plot_diversity(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
+      nrow = 1, rel_widths = c(0.4, 1)
+    ),
+    nrow = 2, rel_heights = c(0.5, 1)
   )
+}
