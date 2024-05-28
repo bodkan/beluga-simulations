@@ -189,9 +189,9 @@ saveRDS(results_df, "results_df.rds")
 
 results_df <- readRDS("results_df.rds")
 
-unique(results_df$Ne_start)
-unique(results_df$Ne_hunted)
-unique(results_df$census_ratio)
+# unique(results_df$Ne_start)
+# unique(results_df$Ne_hunted)
+# unique(results_df$census_ratio)
 
 # > unique(results_df$Ne_start)
 # [1] 10000 20000 30000 40000
@@ -200,21 +200,21 @@ unique(results_df$census_ratio)
 # > unique(results_df$census_ratio)
 # [1] 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 
-list(Ne_start = 10000, Ne_hunted = 250, census_ratio = 1) %>%
-{
-  Ne_start = .$Ne_start
-  Ne_hunted = .$Ne_hunted
-  census_ratio = .$census_ratio
-
-  plot_grid(
-    plot_slopes(results_df),
-    plot_grid(
-      plot_demography(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
-      plot_diversity(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
-      nrow = 1, rel_widths = c(0.4, 1)
-    ),
-    nrow = 2, rel_heights = c(0.5, 1)
-  )
-}
+# list(Ne_start = 10000, Ne_hunted = 250, census_ratio = 1) %>%
+# {
+#   Ne_start = .$Ne_start
+#   Ne_hunted = .$Ne_hunted
+#   census_ratio = .$census_ratio
+#
+#   plot_grid(
+#     plot_slopes(results_df),
+#     plot_grid(
+#       plot_demography(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
+#       plot_diversity(results_df, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio),
+#       nrow = 1, rel_widths = c(0.4, 1)
+#     ),
+#     nrow = 2, rel_heights = c(0.5, 1)
+#   )
+# }
 
 
