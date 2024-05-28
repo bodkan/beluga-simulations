@@ -55,9 +55,9 @@ simulate_ts <- function(model, engine_fun, Ne_start) {
 
   # simulate tree sequence
   ts <-
-    engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples) %>%
-    ts_recapitate(Ne = Ne_start, recombination_rate = RECOMBINATION_RATE) %>%
-    ts_mutate(mutation_rate = MUTATION_RATE)
+    engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples, seed = 42) %>%
+    ts_recapitate(Ne = Ne_start, recombination_rate = RECOMBINATION_RATE, seed = 42) %>%
+    ts_mutate(mutation_rate = MUTATION_RATE, seed = 42)
 
   ts
 }
