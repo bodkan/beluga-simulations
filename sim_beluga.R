@@ -181,13 +181,14 @@ results <- mclapply((1:nrow(grid)), function(i) {
   results_msprime$engine <- "msprime"
 
   results <- rbind(results_slim, results_msprime)
+  results
 }, mc.cores = detectCores())
 
 results_df <- bind_rows(results)
 
-saveRDS(results_df, "results_df.rds")
+saveRDS(results_df, "pi_beluga.rds")
 
-results_df <- readRDS("results_df.rds")
+# results_df <- readRDS("pi_beluga.rds")
 
 # unique(results_df$Ne_start)
 # unique(results_df$Ne_hunted)
