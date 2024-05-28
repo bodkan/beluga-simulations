@@ -12,8 +12,8 @@ pi_df <- mclapply(seq(1000, 50000, by = 1000), function(Ne) {
     resize(time = 5000, N = 1000, how = "step")
   model <- compile_model(pop, generation_time = 1, serialize = FALSE)
   samples <- schedule_sampling(model, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
-  ts <- msprime(model, sequence_length = 10e6, recombination_rate = 1e-8, samples = samples, seed = 42) %>%
-    ts_mutate(1e-8, seed = 42)
+  ts <- msprime(model, sequence_length = 10e6, recombination_rate = 1e-8, samples = samples, random_seed = 42) %>%
+    ts_mutate(1e-8, random_seed = 42)
   result <- ts_samples(ts) %>% mutate(Ne = Ne)
   result$diversity <- ts_diversity(ts, sample_sets = ts_names(ts))$diversity
   result
