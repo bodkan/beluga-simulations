@@ -1,4 +1,3 @@
-
 # beluga diversity ----------------------------------------------------------------------------
 
 library(slendr)
@@ -49,14 +48,15 @@ generate_model <- function(Ne_start, Ne_hunted, census_ratio) {
   model
 }
 
-simulate_ts <- function(model) {
+simulate_ts <- function(model, engine_fun, Ne_start) {
   # schedule sampling at regular time points
   population <- model$populations[[1]]
   samples <- schedule_sampling(model, times = c(seq(T_START, T_END, by = 50)), list(population, 100))
 
   # simulate tree sequence
   ts <-
-    msprime(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples) %>%
+    engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples) %>%
+    ts_recapitate(Ne = Ne_start, recombination_rate = RECOMBINATION_RATE) %>%
     ts_mutate(mutation_rate = MUTATION_RATE)
 
   ts
@@ -162,7 +162,6 @@ plot_slopes <- function(results) {
 grid <- expand_grid(NE_START, NE_HUNTED, CENSUS_RATIO)
 
 results <- mclapply((1:nrow(grid)), function(i) {
-  # cat(sprintf("%d / %d", i, nrow(grid)))
   Ne_start <- grid[i, ]$NE_START
   Ne_hunted <- grid[i, ]$NE_HUNTED
   census_ratio <- grid[i, ]$CENSUS_RATIO
@@ -171,13 +170,17 @@ results <- mclapply((1:nrow(grid)), function(i) {
 
   if (is.null(model))
     ts <- NULL
-  else
-    ts <- simulate_ts(model)
+  else {
+    ts_slim <- simulate_ts(model, engine_fun = slim, Ne_start = Ne_start)
+    ts_msprime <- simulate_ts(model, engine_fun = msprime, Ne_start = Ne_start)
+  }
 
-  results <- compute_results(ts, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio)
-  cat("\r")
+  results_slim <- compute_results(ts_slim, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio)
+  results_msprime <- compute_results(ts_msprime, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio)
+  results_slim$engine <- "SLiM"
+  results_msprime$engine <- "msprime"
 
-  results
+  results <- rbind(results_slim, results_msprime)
 }, mc.cores = detectCores())
 
 results_df <- bind_rows(results)
