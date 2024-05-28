@@ -161,7 +161,7 @@ plot_slopes <- function(results) {
 
 grid <- expand_grid(NE_START, NE_HUNTED, CENSUS_RATIO)
 
-results <- mclapply((1:nrow(grid))[1:10], function(i) {
+results <- mclapply((1:nrow(grid)), function(i) {
   Ne_start <- grid[i, ]$NE_START
   Ne_hunted <- grid[i, ]$NE_HUNTED
   census_ratio <- grid[i, ]$CENSUS_RATIO
