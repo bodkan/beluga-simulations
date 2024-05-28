@@ -12,8 +12,8 @@ pi_df <- mclapply(seq(1000, 50000, by = 1000), function(Ne) {
     resize(time = 5000, N = 1000, how = "step")
   model <- compile_model(pop, generation_time = 1, serialize = FALSE)
   samples <- schedule_sampling(model, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
-  ts <- msprime(model, sequence_length = 10e6, recombination_rate = 1e-8, samples = samples) %>%
-    ts_mutate(1e-8)
+  ts <- msprime(model, sequence_length = 10e6, recombination_rate = 1e-8, samples = samples, seed = 42) %>%
+    ts_mutate(1e-8, seed = 42)
   result <- ts_samples(ts) %>% mutate(Ne = Ne)
   result$diversity <- ts_diversity(ts, sample_sets = ts_names(ts))$diversity
   result
@@ -30,41 +30,41 @@ pi_df <-
 
 saveRDS(pi_df, "pi_simple.rds")
 
-pi_df %>% filter(model == "constant Ne") %>%
-  ggplot(aes(factor(Ne), diversity, color = model)) +
-  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
-  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
-  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
-  scale_color_discrete(drop = FALSE) +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
-  labs(x = "Ne", y = "nucleotide diversity",
-       title = "Expected nucleotide diversity as a function of Ne")
-
-pi_df %>% filter(model == "constant Ne" | grepl("1000 gens", model)) %>%
-  ggplot(aes(factor(Ne), diversity, color = model)) +
-  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
-  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
-  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
-  scale_color_discrete(drop = FALSE) +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
-  labs(x = "Ne", y = "nucleotide diversity",
-       title = "Expected nucleotide diversity as a function of Ne")
-
-pi_df %>% filter(model == "constant Ne" | grepl("1000 gens", model) | grepl("2000 gens", model)) %>%
-  ggplot(aes(factor(Ne), diversity, color = model)) +
-  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
-  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
-  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
-  scale_color_discrete(drop = FALSE) +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
-  labs(x = "Ne", y = "nucleotide diversity",
-       title = "Expected nucleotide diversity as a function of Ne")
-
-ggplot(pi_df, aes(factor(Ne), diversity, color = model)) +
-  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
-  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
-  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
-  scale_color_discrete(drop = FALSE) +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
-  labs(x = "Ne", y = "nucleotide diversity",
-       title = "Expected nucleotide diversity as a function of Ne")
+# pi_df %>% filter(model == "constant Ne") %>%
+#   ggplot(aes(factor(Ne), diversity, color = model)) +
+#   geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+#   # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+#   geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+#   scale_color_discrete(drop = FALSE) +
+#   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+#   labs(x = "Ne", y = "nucleotide diversity",
+#        title = "Expected nucleotide diversity as a function of Ne")
+#
+# pi_df %>% filter(model == "constant Ne" | grepl("1000 gens", model)) %>%
+#   ggplot(aes(factor(Ne), diversity, color = model)) +
+#   geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+#   # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+#   geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+#   scale_color_discrete(drop = FALSE) +
+#   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+#   labs(x = "Ne", y = "nucleotide diversity",
+#        title = "Expected nucleotide diversity as a function of Ne")
+#
+# pi_df %>% filter(model == "constant Ne" | grepl("1000 gens", model) | grepl("2000 gens", model)) %>%
+#   ggplot(aes(factor(Ne), diversity, color = model)) +
+#   geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+#   # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+#   geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+#   scale_color_discrete(drop = FALSE) +
+#   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+#   labs(x = "Ne", y = "nucleotide diversity",
+#        title = "Expected nucleotide diversity as a function of Ne")
+#
+# ggplot(pi_df, aes(factor(Ne), diversity, color = model)) +
+#   geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+#   # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+#   geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+#   scale_color_discrete(drop = FALSE) +
+#   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+#   labs(x = "Ne", y = "nucleotide diversity",
+#        title = "Expected nucleotide diversity as a function of Ne")
