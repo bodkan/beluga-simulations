@@ -169,7 +169,8 @@ results <- mclapply((1:nrow(grid)), function(i) {
   model <- generate_model(Ne_start, Ne_hunted, census_ratio)
 
   if (is.null(model))
-    ts <- NULL
+    ts_slim <- NULL
+    ts_msprime <- NULL
   else {
     ts_slim <- simulate_ts(model, engine_fun = slim, Ne_start = Ne_start)
     ts_msprime <- simulate_ts(model, engine_fun = msprime, Ne_start = Ne_start)
