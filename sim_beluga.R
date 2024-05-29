@@ -55,9 +55,12 @@ simulate_ts <- function(model, engine_fun, Ne_start) {
 
   # simulate tree sequence
   ts <-
-    engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples, random_seed = 42) %>%
-    ts_recapitate(Ne = Ne_start, recombination_rate = RECOMBINATION_RATE, random_seed = 42) %>%
-    ts_mutate(mutation_rate = MUTATION_RATE, random_seed = 42)
+    engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples, random_seed = 42)
+
+  if (identical(engine_fun, slim))
+    ts <- ts_recapitate(ts, Ne = Ne_start, recombination_rate = RECOMBINATION_RATE, random_seed = 42)
+
+  ts <- ts_mutate(ts, mutation_rate = MUTATION_RATE, random_seed = 42)
 
   ts
 }
@@ -161,6 +164,8 @@ plot_slopes <- function(results) {
 
 grid <- expand_grid(NE_START, NE_HUNTED, CENSUS_RATIO)
 
+t_start <- Sys.time()
+
 results <- mclapply((1:nrow(grid)), function(i) {
   Ne_start <- grid[i, ]$NE_START
   Ne_hunted <- grid[i, ]$NE_HUNTED
@@ -184,6 +189,10 @@ results <- mclapply((1:nrow(grid)), function(i) {
   results <- rbind(results_slim, results_msprime)
   results
 }, mc.cores = detectCores())
+
+t_end <- Sys.time()
+
+t_end - t_start
 
 results_df <- bind_rows(results)
 
