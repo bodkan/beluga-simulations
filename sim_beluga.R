@@ -162,6 +162,7 @@ plot_slopes <- function(results) {
 
 # grid run ------------------------------------------------------------------------------------
 
+
 grid <- expand_grid(NE_START, NE_HUNTED, CENSUS_RATIO)
 
 t_start <- Sys.time()
@@ -193,10 +194,11 @@ results <- mclapply((1:nrow(grid)), function(i) {
 t_end <- Sys.time()
 
 t_end - t_start
+# Time difference of 1.650988 hours
 
 results_df <- bind_rows(results)
 
-saveRDS(results_df, "pi_beluga.rds")
+saveRDS(results_df, "pi_beluga_df.rds")
 
 # results_df <- readRDS("pi_beluga.rds")
 
