@@ -200,9 +200,9 @@ t_end - t_start
 
 results_df <- bind_rows(results)
 
-saveRDS(results_df, "pi_beluga_df.rds")
+saveRDS(results_df, sprintf("pi_beluga_%sMb.rds", SEQUENCE_LENGTH / 1e6)))
 
-# results_df <- readRDS("pi_beluga.rds")
+# results_df <- readRDS(sprintf("pi_beluga_%sMb.rds", SEQUENCE_LENGTH / 1e6))
 
 # unique(results_df$Ne_start)
 # unique(results_df$Ne_hunted)
