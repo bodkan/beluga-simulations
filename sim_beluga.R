@@ -191,7 +191,7 @@ results <- mclapply((1:nrow(grid)), function(i) {
 
   results <- rbind(results_slim, results_msprime)
   results
-}, mc.cores = detectCores())
+}, mc.cores = detectCores() / 2)
 
 t_end <- Sys.time()
 
