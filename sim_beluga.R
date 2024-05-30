@@ -11,12 +11,12 @@ library(tidyr)
 library(parallel)
 library(cowplot)
 
-NE_START <- c(10e3, 20e3, 30e3, 40e3)
+NE_START <- c(40e3, 30e3, 20e3, 10e3)
 NE_HUNTED <- c(100, 250, 500, 750, 1000, 1500, 2000, 3000)
-CENSUS_RATIO <- c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+CENSUS_RATIO <- c(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)
 
 GENERATION_TIME <- 32
-SEQUENCE_LENGTH <- 50e6
+SEQUENCE_LENGTH <- 100e6
 RECOMBINATION_RATE <- 1e-8
 MUTATION_RATE <- 1e-8
 
