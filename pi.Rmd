@@ -1,0 +1,109 @@
+---
+title: "Beluga nucleotide diversity"
+output:
+  html_document:
+    self_contained: yes
+date: "2024-05-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 8,
+  fig.height = 6
+)
+```
+
+## Setup
+
+Running this will make sure all dependencies of the project will be setup before running anything else:
+
+```{r, eval=FALSE}
+install.packages("renv")
+
+renv::restore()
+```
+
+## Toy simulations of $Ne_e$ vs $\pi$
+
+```{r, message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, echo=FALSE}
+suppressPackageStartupMessages(library(slendr))
+
+pop <- population("pop", time = 10000, N = 10000)
+model1 <- compile_model(pop, generation_time = 1, serialize = FALSE, direction = "backward")
+samples <- schedule_sampling(model1, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
+p_model1 <- plot_model(model1, samples = samples) + ggtitle("Constant Ne")
+
+pop <- population("pop", time = 10000, N = 10000) %>%
+  resize(time = 5000, N = 1000, how = "step")
+model2 <- compile_model(pop, generation_time = 1, serialize = FALSE)
+samples <- schedule_sampling(model2, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
+p_model2 <- plot_model(model2, samples = samples)  + ggtitle("Constant Ne, then a bottleneck")
+
+cowplot::plot_grid(p_model1, p_model2, rel_widths = c(1, 0.85))
+```
+
+### Running the simulations
+
+When run, this script will generate the file `pi_simple.rds`:
+
+```
+Rscript pi_simple.R
+```
+
+```{r}
+pi_simple <- readRDS("pi_simple.rds")
+```
+
+### Results
+
+```{r}
+pi_simple %>% filter(model == "constant Ne") %>%
+  ggplot(aes(factor(Ne), diversity, color = model)) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+  labs(x = "Ne", y = "nucleotide diversity",
+       title = "Expected nucleotide diversity as a function of Ne")
+```
+
+```{r}
+pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model)) %>%
+  ggplot(aes(factor(Ne), diversity, color = model)) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+  scale_color_discrete(drop = FALSE) +
+  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+  labs(x = "Ne", y = "nucleotide diversity",
+       title = "Expected nucleotide diversity as a function of Ne")
+```
+
+```{r}
+pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model) | grepl("2000 gens", model)) %>%
+  ggplot(aes(factor(Ne), diversity, color = model)) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+  scale_color_discrete(drop = FALSE) +
+  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+  labs(x = "Ne", y = "nucleotide diversity",
+       title = "Expected nucleotide diversity as a function of Ne")
+```
+
+```{r}
+ggplot(pi_simple, aes(factor(Ne), diversity, color = model)) +
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
+  # geom_jitter(position = position_dodge(width = 0.8), alpha = 0.2, size = 0.75) +
+  geom_smooth(aes(group = model), method = "lm", linewidth = 0.5, color = "black", linetype = 2) +
+  scale_color_discrete(drop = FALSE) +
+  theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
+  labs(x = "Ne", y = "nucleotide diversity",
+       title = "Expected nucleotide diversity as a function of Ne")
+```
