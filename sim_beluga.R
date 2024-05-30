@@ -200,7 +200,7 @@ t_end - t_start
 
 results_df <- bind_rows(results)
 
-saveRDS(results_df, sprintf("pi_beluga_%sMb.rds", SEQUENCE_LENGTH / 1e6)))
+saveRDS(results_df, sprintf("pi_beluga_%sMb.rds", SEQUENCE_LENGTH / 1e6))
 
 # results_df <- readRDS(sprintf("pi_beluga_%sMb.rds", SEQUENCE_LENGTH / 1e6))
 
