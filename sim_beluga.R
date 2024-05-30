@@ -57,8 +57,10 @@ simulate_ts <- function(model, engine_fun, Ne_start) {
   ts <-
     engine_fun(model, sequence_length = SEQUENCE_LENGTH, recombination_rate = RECOMBINATION_RATE, samples = samples, random_seed = 42)
 
-  if (identical(engine_fun, slim))
-    ts <- ts_recapitate(ts, Ne = Ne_start, recombination_rate = RECOMBINATION_RATE, random_seed = 42)
+  if (identical(engine_fun, slim)) {
+    ts <- ts_recapitate(ts, Ne = Ne_start, recombination_rate = RECOMBINATION_RATE, random_seed = 42) %>%
+      ts_simplify()
+  }
 
   ts <- ts_mutate(ts, mutation_rate = MUTATION_RATE, random_seed = 42)
 
