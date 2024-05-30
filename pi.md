@@ -13,7 +13,7 @@ install.packages("renv")
 renv::restore()
 ```
 
-## Toy simulations of $Ne_e$ vs $\pi$
+## Toy simulations of $N_e$ vs $\pi$
 
 ``` r
 library(dplyr)
