@@ -27,7 +27,7 @@ install.packages("renv")
 renv::restore()
 ```
 
-## Toy simulations of $N_e$ vs $\pi$
+## Toy simulations of $Ne_e$ vs $\pi$
 
 ```{r, message=FALSE}
 library(dplyr)
@@ -37,17 +37,19 @@ library(ggplot2)
 ```{r, echo=FALSE}
 suppressPackageStartupMessages(library(slendr))
 
-pop <- population("pop", time = 10000, N = 10000)
-model1 <- compile_model(pop, generation_time = 1, serialize = FALSE, direction = "backward")
-p_model1 <- plot_model(model1) + ggtitle("Constant Ne")
+# pop <- population("pop", time = 10000, N = 10000)
+# model1 <- compile_model(pop, generation_time = 1, serialize = FALSE, direction = "backward")
+# samples <- schedule_sampling(model1, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
+# p_model1 <- plot_model(model1, samples = samples) + ggtitle("Constant Ne")
 
 pop <- population("pop", time = 10000, N = 10000) %>%
   resize(time = 5000, N = 1000, how = "step")
 model2 <- compile_model(pop, generation_time = 1, serialize = FALSE)
 samples <- schedule_sampling(model2, times = c(5000, 4000, 3000, 2000, 1000, 0), list(pop, 50))
-p_model2 <- plot_model(model2)  + ggtitle("Constant Ne, then a bottleneck")
+p_model2 <- plot_model(model2, samples = samples)  + ggtitle("Constant Ne, then a bottleneck")
+p_model2
 
-cowplot::plot_grid(p_model1, p_model2, rel_widths = c(1, 0.85))
+# cowplot::plot_grid(p_model1, p_model2, rel_widths = c(1, 0.85))
 ```
 
 ### Running the simulations
