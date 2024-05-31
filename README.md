@@ -20,7 +20,7 @@ library(dplyr)
 library(ggplot2)
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](figures/unnamed-chunk-3-1.png)<!-- -->
 
 ### Running the simulations
 
@@ -43,11 +43,10 @@ pi_simple %>% filter(model == "constant Ne") %>%
   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
   labs(x = "Ne", y = "nucleotide diversity",
        title = "Expected nucleotide diversity as a function of Ne")
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-    ## `geom_smooth()` using formula = 'y ~ x'
-
-![](pi_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](figures/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 pi_simple %>% filter(model == "constant Ne" | grepl("100 gens", model)) %>%
@@ -59,11 +58,10 @@ pi_simple %>% filter(model == "constant Ne" | grepl("100 gens", model)) %>%
   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
   labs(x = "Ne", y = "nucleotide diversity",
        title = "Expected nucleotide diversity as a function of Ne")
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-    ## `geom_smooth()` using formula = 'y ~ x'
-
-![](pi_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](figures/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model)) %>%
@@ -75,11 +73,10 @@ pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model)) %>%
   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
   labs(x = "Ne", y = "nucleotide diversity",
        title = "Expected nucleotide diversity as a function of Ne")
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-    ## `geom_smooth()` using formula = 'y ~ x'
-
-![](pi_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](figures/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model) | grepl("2000 gens", model)) %>%
@@ -91,11 +88,10 @@ pi_simple %>% filter(model == "constant Ne" | grepl("1000 gens", model) | grepl(
   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
   labs(x = "Ne", y = "nucleotide diversity",
        title = "Expected nucleotide diversity as a function of Ne")
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-    ## `geom_smooth()` using formula = 'y ~ x'
-
-![](pi_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](figures/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 ggplot(pi_simple, aes(factor(Ne), diversity, color = model)) +
@@ -106,15 +102,14 @@ ggplot(pi_simple, aes(factor(Ne), diversity, color = model)) +
   theme(axis.text.x = element_text(hjust = 1, angle = 45), legend.position = "bottom") +
   labs(x = "Ne", y = "nucleotide diversity",
        title = "Expected nucleotide diversity as a function of Ne")
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-    ## `geom_smooth()` using formula = 'y ~ x'
-
-![](pi_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](figures/unnamed-chunk-9-1.png)<!-- -->
 
 ## Simulations of Beluga diversity given a level of hunting
 
-![](pi_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](figures/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 library(ggplot2)
@@ -141,21 +136,18 @@ source("plotting.R")
 
 ``` r
 unique(pi_beluga$Ne_start)
+#> [1] 10000 20000 30000 40000
 ```
-
-    ## [1] 10000 20000 30000 40000
 
 ``` r
 unique(pi_beluga$Ne_hunted)
+#> [1]  100  250  500  750 1000 1500 2000 3000
 ```
-
-    ## [1]  100  250  500  750 1000 1500 2000 3000
 
 ``` r
 unique(pi_beluga$census_ratio)
+#>  [1] 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 ```
-
-    ##  [1] 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
 
     > unique(pi_beluga$Ne_start)
     10000 20000 30000 40000
@@ -172,7 +164,7 @@ plot_grid(
 )
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](figures/unnamed-chunk-14-1.png)<!-- -->
 
 #### Starting $N_e$ = 40000, $N_e$ hunted = 100, census ratio = 1.0
 
@@ -180,7 +172,7 @@ plot_grid(
 plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 100, census_ratio = 1.0, engine = "msprime")
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](figures/unnamed-chunk-15-1.png)<!-- -->
 
 <!-- ```{r} -->
 <!-- plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
@@ -192,7 +184,7 @@ plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 100, census_ratio = 1.0, en
 plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 1.0, engine = "msprime")
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](figures/unnamed-chunk-16-1.png)<!-- -->
 
 <!-- ```{r} -->
 <!-- plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 1.0, engine = "SLiM") -->
@@ -204,7 +196,7 @@ plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 1.0, e
 plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 100, census_ratio = 1.0, engine = "msprime")
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](figures/unnamed-chunk-17-1.png)<!-- -->
 
 <!-- ```{r} -->
 <!-- plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
@@ -216,7 +208,7 @@ plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 100, census_ratio = 1.0, en
 plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 250, census_ratio = 1.0, engine = "msprime")
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](figures/unnamed-chunk-18-1.png)<!-- -->
 
 <!-- ```{r} -->
 <!-- plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 250, census_ratio = 1.0, engine = "SLiM") -->
@@ -234,7 +226,7 @@ bind_rows(pi_beluga$lm) %>%
   facet_wrap(~ statistic, scales = "free")
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](figures/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 p_p_vs_rsquared <-
@@ -263,4 +255,4 @@ p_p_vs_slope <-
 cowplot::plot_grid(p_p_vs_rsquared, p_p_vs_slope, nrow = 2)
 ```
 
-![](pi_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](figures/unnamed-chunk-20-1.png)<!-- -->
