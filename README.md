@@ -151,10 +151,16 @@ unique(pi_beluga$census_ratio)
 
     > unique(pi_beluga$Ne_start)
     10000 20000 30000 40000
+    # use: 40000
     > unique(pi_beluga$Ne_hunted)
     100  250  500  750 1000 1500 2000 3000
+    # use: 250  500  1000 2500
     > unique(pi_beluga$census_ratio)
     0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0
+    # use: 0.3 0.5 0.7
+
+TODO: Let’s say we stop hunting now, and let it runs for X – when do we
+see a measurable drop
 
 ``` r
 plot_grid(
@@ -256,3 +262,12 @@ cowplot::plot_grid(p_p_vs_rsquared, p_p_vs_slope, nrow = 2)
 ```
 
 ![](figures/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+pi_beluga %>% unnest(pi) %>% filter(time %in% c(1300, 1500, 1800, 0)) %>%
+  filter(Ne_start == 40000, Ne_hunted == 1000, census_ratio == 0.5) %>%
+  ggplot(aes(factor(time), pi, color = engine)) +
+  geom_jitter()
+```
+
+![](figures/unnamed-chunk-21-1.png)<!-- -->
