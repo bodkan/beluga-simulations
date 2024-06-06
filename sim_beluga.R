@@ -11,8 +11,8 @@ library(tidyr)
 library(parallel)
 library(cowplot)
 
-NE_START <- c(40e3, 30e3, 20e3, 10e3)
-NE_HUNTED <- c(100, 250, 500, 750, 1000, 1500, 2000, 3000)
+N_START <- c(40e3, 30e3, 20e3, 10e3)
+N_HUNTED <- c(100, 250, 500, 750, 1000, 1500, 2000, 3000)
 CENSUS_RATIO <- c(1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)
 
 GENERATION_TIME <- 32
@@ -24,23 +24,22 @@ T_START <- 1150
 T_END <- 2200
 T_STEP <- 32
 
-generate_model <- function(Ne_start, Ne_hunted, census_ratio) {
+generate_model <- function(N_start, N_hunted, census_ratio) {
   # create the initial population of belugas
   t <- T_START
-  N <- Ne_start * census_ratio
-  demography <- population("Beluga", time = t, N = N)
+  Ne <- N_start * census_ratio
+  demography <- population("Beluga", time = t, N = Ne)
 
   # every t_step years, decrease the population by N_hunted
   while (TRUE) {
     if (t > T_END) break
 
     t <- t + T_STEP
-    N <- N - Ne_hunted * census_ratio
-    # cat(t, "\t", N, "\n")
-    if (N <= 0)
+    Ne <- Ne - N_hunted * census_ratio
+    if (Ne <= 0)
       return(NULL)
 
-    demography <- resize(demography, time = t, N = N, how = "step")
+    demography <- resize(demography, time = t, N = Ne, how = "step")
   }
 
   model <- compile_model(demography, generation_time = GENERATION_TIME, simulation_length = 1000, time_units = "years C.E.")
@@ -67,8 +66,8 @@ simulate_ts <- function(model, engine_fun, Ne_start) {
   ts
 }
 
-compute_results <- function(ts, Ne_start, Ne_hunted, census_ratio) {
-  result <- tibble(Ne_start, Ne_hunted, census_ratio)
+compute_results <- function(ts, N_start, N_hunted, census_ratio) {
+  result <- tibble(N_start, N_hunted, census_ratio)
 
   if (is.null(ts)) {
     df <- NULL
@@ -118,33 +117,33 @@ compute_results <- function(ts, Ne_start, Ne_hunted, census_ratio) {
 # grid run ------------------------------------------------------------------------------------
 
 
-grid <- expand_grid(NE_START, NE_HUNTED, CENSUS_RATIO)
+grid <- expand_grid(N_START, N_HUNTED, CENSUS_RATIO)
 
 t_start <- Sys.time()
 
 results <- mclapply((1:nrow(grid)), function(i) {
-  Ne_start <- grid[i, ]$NE_START
-  Ne_hunted <- grid[i, ]$NE_HUNTED
+  N_start <- grid[i, ]$N_START
+  N_hunted <- grid[i, ]$N_HUNTED
   census_ratio <- grid[i, ]$CENSUS_RATIO
 
-  model <- generate_model(Ne_start, Ne_hunted, census_ratio)
+  model <- generate_model(N_start, N_hunted, census_ratio)
 
   if (is.null(model)) {
     ts_slim <- NULL
     ts_msprime <- NULL
   } else {
-    ts_slim <- simulate_ts(model, engine_fun = slim, Ne_start = Ne_start)
-    ts_msprime <- simulate_ts(model, engine_fun = msprime, Ne_start = Ne_start)
+    ts_slim <- simulate_ts(model, engine_fun = slim, Ne_start = N_start * census_ratio)
+    ts_msprime <- simulate_ts(model, engine_fun = msprime, Ne_start = N_start * census_ratio)
   }
 
-  results_slim <- compute_results(ts_slim, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio)
-  results_msprime <- compute_results(ts_msprime, Ne_start = Ne_start, Ne_hunted = Ne_hunted, census_ratio = census_ratio)
+  results_slim <- compute_results(ts_slim, N_start = N_start, N_hunted = N_hunted, census_ratio = census_ratio)
+  results_msprime <- compute_results(ts_msprime, N_start = N_start, N_hunted = N_hunted, census_ratio = census_ratio)
   results_slim$engine <- "SLiM"
   results_msprime$engine <- "msprime"
 
   results <- rbind(results_slim, results_msprime)
   results
-}, mc.cores = detectCores() / 2)
+}, mc.cores = detectCores())
 
 t_end <- Sys.time()
 
