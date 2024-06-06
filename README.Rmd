@@ -161,16 +161,16 @@ source("plotting.R")
 ```
 
 ```{r}
-unique(pi_beluga$Ne_start)
-unique(pi_beluga$Ne_hunted)
+unique(pi_beluga$N_start)
+unique(pi_beluga$N_hunted)
 unique(pi_beluga$census_ratio)
 ```
 
 ```
-> unique(pi_beluga$Ne_start)
+> unique(pi_beluga$N_start)
 10000 20000 30000 40000
 # use: 40000
-> unique(pi_beluga$Ne_hunted)
+> unique(pi_beluga$N_hunted)
 100  250  500  750 1000 1500 2000 3000
 # use: 250  500  1000 2500
 > unique(pi_beluga$census_ratio)
@@ -191,41 +191,41 @@ plot_grid(
 #### Starting $N_e$ = 40000, $N_e$ hunted = 100, census ratio = 1.0
 
 ```{r}
-plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 100, census_ratio = 1.0, engine = "msprime")
+plot_panels(pi_beluga, N_start = 40000, N_hunted = 100, census_ratio = 1.0, engine = "msprime")
 ```
 
 <!-- ```{r} -->
-<!-- plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
+<!-- plot_panels(pi_beluga, N_start = 40000, N_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
 <!-- ``` -->
 
 #### Starting $N_e$ = 40000, $N_e$ hunted = 1000, census ratio = 1.0
 
 ```{r}
-plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 1.0, engine = "msprime")
+plot_panels(pi_beluga, N_start = 40000, N_hunted = 1000, census_ratio = 1.0, engine = "msprime")
 ```
 
 <!-- ```{r} -->
-<!-- plot_panels(pi_beluga, Ne_start = 40000, Ne_hunted = 1000, census_ratio = 1.0, engine = "SLiM") -->
+<!-- plot_panels(pi_beluga, N_start = 40000, N_hunted = 1000, census_ratio = 1.0, engine = "SLiM") -->
 <!-- ``` -->
 
 #### Starting $N_e$ = 10000, $N_e$ hunted = 100, census ratio = 1.0
 
 ```{r}
-plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 100, census_ratio = 1.0, engine = "msprime")
+plot_panels(pi_beluga, N_start = 10000, N_hunted = 100, census_ratio = 1.0, engine = "msprime")
 ```
 
 <!-- ```{r} -->
-<!-- plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
+<!-- plot_panels(pi_beluga, N_start = 10000, N_hunted = 100, census_ratio = 1.0, engine = "SLiM") -->
 <!-- ``` -->
 
 #### Starting $N_e$ = 10000, $N_e$ hunted = 300, census ratio = 1.0
 
 ```{r}
-plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 250, census_ratio = 1.0, engine = "msprime")
+plot_panels(pi_beluga, N_start = 10000, N_hunted = 250, census_ratio = 1.0, engine = "msprime")
 ```
 
 <!-- ```{r} -->
-<!-- plot_panels(pi_beluga, Ne_start = 10000, Ne_hunted = 250, census_ratio = 1.0, engine = "SLiM") -->
+<!-- plot_panels(pi_beluga, N_start = 10000, N_hunted = 250, census_ratio = 1.0, engine = "SLiM") -->
 <!-- ``` -->
 
 ```{r}
@@ -255,7 +255,7 @@ p_p_vs_rsquared <-
 p_p_vs_slope <-
   filter(pi_beluga, engine == "msprime") %>%
   unnest(lm) %>%
-  ggplot(aes(p.value, slope, aes(color = Ne_start))) +
+  ggplot(aes(p.value, slope, aes(color = N_start))) +
   geom_point(alpha = 0.5) +
   labs(x = "p-value of the linear regression: nucleotide diversity ~ time",
        y = "slope of the linear regression") +
@@ -270,7 +270,7 @@ cowplot::plot_grid(p_p_vs_rsquared, p_p_vs_slope, nrow = 2)
 
 ```{r}
 pi_beluga %>% unnest(pi) %>% filter(time %in% c(1300, 1500, 1800, 0)) %>%
-  filter(Ne_start == 40000, Ne_hunted == 1000, census_ratio == 0.5) %>%
+  filter(N_start == 40000, N_hunted == 1000, census_ratio == 0.5) %>%
   ggplot(aes(factor(time), pi, color = engine)) +
   geom_jitter()
 ```
