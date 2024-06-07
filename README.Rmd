@@ -318,7 +318,7 @@ Subset simulation results to those roughly matching the empirical data:
 pi_simulated <- pi_beluga %>%
   filter(engine == "msprime") %>%
   unnest(pi) %>%
-  select(-model, -lm, -engine) %>%
+  select(-model, -engine) %>%
   mutate(snapshot = case_when(
     time >= 1290 & time <= 1440 ~ "Snapshot #1",
     time >= 1450 & time <= 1650 ~ "Snapshot #2",
@@ -356,10 +356,12 @@ p_emp <- ggplot(data = pi_empirical, aes(snapshot, pi_relative)) +
   geom_hline(yintercept = 1, linetype = "dashed", alpha = 0.75) +
   coord_cartesian(ylim = c(0.5, 1.5)); p_emp
 ```
-  
+
+#### Figure #1
+
 ```{r}
 pi_simulated_labels <-
-  pi_simulated %>%  
+  pi_simulated %>%
   mutate(
     census_ratio = factor(paste("Ne : census ratio =", census_ratio)),
     N_hunted = paste("N hunted =", N_hunted) %>% factor(., levels = gtools::mixedsort(unique(.))),
@@ -381,4 +383,65 @@ p_sim_violins <-
   coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
 
 ggsave("p_sim_violins.pdf", p_sim_violins, width = 7, height = 8)
+```
+
+#### Figure #2
+
+```{r}
+markers <- tibble(metric = c("slope", "p-value", "R-squared"), value = c(0, 0.05, 0))
+
+lm_metrics <- pi_simulated_labels %>%
+  select(-pi, -pi_relative, -snapshot) %>%
+  unnest(lm) %>% 
+  pivot_longer(cols = c("r.squared", "slope", "p.value"), names_to = "metric") %>%
+  mutate(metric = case_when(
+    metric == "r.squared" ~ "R-squared",
+    metric == "p.value" ~ "p-value",
+    metric == "slope" ~ "slope"
+  )) %>%
+  distinct()
+
+lm_metrics %>%
+  ggplot(aes(value, color = metric)) +
+  geom_density() +
+  geom_vline(data = markers, aes(xintercept = value), linetype = "dashed") +
+  facet_wrap(metric ~ ., scales = "free", nrow = 1) +
+  theme(legend.position = "none") +
+  ggtitle("Distribution of metrics of the linear fit 'time ~ nucleotide diversity'")
+```
+
+#### Table #1
+
+```{r}
+lm_table <- pi_simulated_labels %>%
+  select(-pi, -pi_relative, -snapshot) %>%
+  unnest(lm) %>% 
+  mutate(N_hunted = as.numeric(gsub("N hunted = ", "", N_hunted)),
+         census_ratio = as.numeric(gsub("Ne : census ratio = ", "", census_ratio))) %>%
+  distinct() %>%
+  select(N_start, N_hunted, census_ratio, p.value, r.squared, slope)
+```
+
+```{r}
+
+lm_table %>%
+  kable(col.names = c("N start", "N hunted", "Ne : census ratio",
+                      "p-value", "R-squared", "slope"),
+        "latex", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down")) %>%
+  row_spec(1, color = "red") %>%
+  save_kable("test.pdf")
+
+system("open test.pdf")
+```
+
+#### Figure #3
+
+```{r}
+p_model <- pi_beluga %>%
+  filter(N_start == 40000, N_hunted == 500, census_ratio == 1.0, engine == "msprime") %>%
+  { .$model[[1]] } %>%
+  plot_model()
+
+ggsave("p_model.pdf", p_model, width = 6, height = 7)
 ```
