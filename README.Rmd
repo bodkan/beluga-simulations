@@ -419,20 +419,29 @@ lm_table <- pi_simulated_labels %>%
   mutate(N_hunted = as.numeric(gsub("N hunted = ", "", N_hunted)),
          census_ratio = as.numeric(gsub("Ne : census ratio = ", "", census_ratio))) %>%
   distinct() %>%
-  select(N_start, N_hunted, census_ratio, p.value, r.squared, slope)
-```
+  select(N_start, N_hunted, census_ratio, p.value, r.squared, slope) %>%
+  mutate(
+    p.value = format(p.value, digits = 2, nsmall = 2),
+    r.squared = format(r.squared, digits = 1),
+    slope = format(slope, digits = 1)
+  )
 
-```{r}
+library(gt)
 
-lm_table %>%
-  kable(col.names = c("N start", "N hunted", "Ne : census ratio",
-                      "p-value", "R-squared", "slope"),
-        "latex", booktabs = T) %>%
-  kable_styling(latex_options = c("striped", "scale_down")) %>%
-  row_spec(1, color = "red") %>%
-  save_kable("test.pdf")
+gt_table <- lm_table %>%
+  gt(auto_align = FALSE) %>%
+  cols_label(
+    N_start = md("**N start**"),
+    N_hunted = md("**N hunted**"),
+    census_ratio = md("**Ne : census ratio**"),
+    p.value = md("**p-value**"),
+    r.squared = md("**R-squared**"),
+    slope = md("**slope**")
+  )
 
-system("open test.pdf")
+gtsave(gt_table, "table.png")
+
+system("open table.png")
 ```
 
 #### Figure #3
