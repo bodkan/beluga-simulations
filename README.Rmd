@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
   fig.width = 10,
   fig.height = 8
 )
+
+Set.seed(42)
 ```
 
 ## Setup
