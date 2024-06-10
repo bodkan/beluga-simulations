@@ -408,17 +408,6 @@ pi_simulated <-
   select(-mean_pi)
 ```
 
-``` r
-p_emp <- ggplot(data = pi_empirical, aes(snapshot, pi_relative)) +
-  geom_violin(aes(fill = snapshot)) +
-  geom_smooth(method = "lm", aes(group = 1), linetype = "dashed", linewidth = 2) +
-  geom_hline(yintercept = 1, linetype = "dashed", alpha = 0.75) +
-  coord_cartesian(ylim = c(0.5, 1.5)); p_emp
-#> `geom_smooth()` using formula = 'y ~ x'
-```
-
-![](figures/unnamed-chunk-33-1.png)<!-- -->
-
 #### Figure \#1
 
 ``` r
@@ -447,7 +436,7 @@ p_sim_violins <-
 #> `geom_smooth()` using formula = 'y ~ x'
 ```
 
-![](figures/unnamed-chunk-34-1.png)<!-- -->
+![](figures/unnamed-chunk-33-1.png)<!-- -->
 
 ``` r
 
@@ -511,6 +500,7 @@ gt_table <- lm_table %>%
     slope = md("**slope**")
   )
 
+write_tsv(lm_table, "results/table.tsv")
 gtsave(gt_table, "results/table.png")
 ```
 
@@ -523,7 +513,7 @@ p_model <- pi_beluga %>%
   plot_model(); p_model
 ```
 
-![](figures/unnamed-chunk-37-1.png)<!-- -->
+![](figures/unnamed-chunk-36-1.png)<!-- -->
 
 ``` r
 
