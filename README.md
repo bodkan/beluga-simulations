@@ -415,7 +415,7 @@ pi_simulated <-
 
 ## Results for the paper
 
-### Figure \#1
+### Supplementary Figure \#x
 
 **Rendered version is [here](results/sim_violins.pdf)**
 
@@ -479,7 +479,7 @@ p_metrics <- lm_metrics %>%
   ggtitle("Distribution of metrics of the linear fit 'time ~ nucleotide diversity'")
 ```
 
-### Table \#1
+### Supplementary Table \#y
 
 **Rendered version is [here](results/table.png)**
 
@@ -533,7 +533,7 @@ write_tsv(lm_table, "results/table.tsv")
 gtsave(gt_table, "results/table.png")
 ```
 
-### Figure \#3
+### Supplementary Figure \#z
 
 **Rendered version is [here](results/model.pdf)**
 
