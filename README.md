@@ -286,3 +286,241 @@ cowplot::plot_grid(p_p_vs_rsquared, p_p_vs_slope, nrow = 2)
 ```
 
 ![](figures/unnamed-chunk-24-1.png)<!-- -->
+
+*msprime* vs SLiM sanity check – if slendr correctly interprets a
+compiled model, both simulation engines should give the same result in
+terms of simulated nucleotide diversities:
+
+``` r
+pi_beluga %>%
+  unnest(pi) %>%
+  select(-model, -lm) %>%
+  group_by(N_start, N_hunted, census_ratio, engine) %>%
+  summarise(pi = mean(pi)) %>%
+  ungroup %>%
+  pivot_wider(names_from = "engine", values_from = "pi") %>%
+  mutate(N_start = paste("N start =", N_start)) %>%
+  # sample_frac(0.1) %>%
+  ggplot(aes(SLiM, msprime, color = factor(N_hunted))) +
+  geom_point(alpha = 0.8) +
+  geom_abline(slope = 1, linetype = "dashed", color = "black") +
+  facet_wrap(~ N_start, scales = "free", nrow = 1) +
+  theme(legend.position = "bottom") +
+  labs(x = expression(paste(pi, " as simulated by SLiM")),
+       y = expression(paste(pi, " as simulated by msprime")))
+#> `summarise()` has grouped output by 'N_start', 'N_hunted', 'census_ratio'. You
+#> can override using the `.groups` argument.
+```
+
+![](figures/unnamed-chunk-25-1.png)<!-- -->
+
+### Empirical comparison
+
+``` r
+library(dplyr)
+library(readr)
+
+pi_empirical <- read_tsv("pi_empirical.txt") %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "snapshot", names_prefix = "pi_",
+    values_to = "pi"
+  ) %>% 
+  mutate(snapshot = ifelse(snapshot == "Present", "Contemporary", snapshot),
+         snapshot = factor(snapshot,
+                           levels = c("Time1", "Time2", "Time3", "Contemporary", "Anadyr", "Bristol", "Cook")))
+#> Rows: 1275 Columns: 7
+#> ── Column specification ────────────────────────────────────────────────────────
+#> Delimiter: "\t"
+#> dbl (7): pi_Time1, pi_Time2, pi_Time3, pi_Present, pi_Anadyr, pi_Cook, pi_Br...
+#> 
+#> ℹ Use `spec()` to retrieve the full column specification for this data.
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+#### Raw results from Figure 3a
+
+``` r
+pi_empirical%>%
+ggplot(aes(snapshot, pi, fill = snapshot)) +
+  geom_violin()
+```
+
+![](figures/unnamed-chunk-27-1.png)<!-- -->
+
+Subset to empirical diversities only in Mackenzie belugas:
+
+``` r
+pi_empirical <- filter(pi_empirical, snapshot %in% c("Time1", "Time2", "Time3", "Contemporary"))
+```
+
+Normalize diversities relative to the first time snapshot:
+
+``` r
+pi_empirical$pi_relative <- pi_empirical$pi / mean(pi_empirical[pi_empirical$snapshot == "Time1", ]$pi)
+```
+
+``` r
+pi_empirical%>%
+ggplot(aes(snapshot, pi_relative, fill = snapshot)) +
+  geom_violin()
+```
+
+![](figures/unnamed-chunk-30-1.png)<!-- -->
+
+#### Empirical vs simulated diversities
+
+Subset simulation results to those roughly matching the empirical data:
+
+``` r
+pi_simulated <- pi_beluga %>%
+  filter(engine == "msprime") %>%
+  unnest(pi) %>%
+  select(-model, -engine) %>%
+  mutate(snapshot = case_when(
+    time >= 1290 & time <= 1440 ~ "Snapshot #1",
+    time >= 1450 & time <= 1650 ~ "Snapshot #2",
+    time >= 1800 & time <= 1870 ~ "Snapshot #3",
+    time >= 1950 & time <= 2025 ~ "Contemporary",
+    TRUE ~ "other"
+  )) %>%
+  filter(snapshot != "other") %>%
+  mutate(snapshot = factor(snapshot,
+                         levels = c("Snapshot #1", "Snapshot #2", "Snapshot #3", "Contemporary"))) %>%
+  select(-name, -pop, -time) %>%
+  filter( # filter based on Mikkel's ideas for the parameter grid
+    N_start == 40000,
+    N_hunted %in% c(250, 500, 1000, 2500),
+    census_ratio %in% c(0.3, 0.5, 0.7)
+  )
+```
+
+Normalize nucleotide diversities in each simulation vs the mean in the
+first respective snapshot:
+
+``` r
+pi_simulated <-
+  pi_simulated %>%
+  group_by(N_start, N_hunted, census_ratio) %>%
+  mutate(mean_pi = mean(pi[snapshot == "Snapshot #1"])) %>%
+  ungroup() %>%
+  mutate(pi_relative = pi / mean_pi) %>%
+  select(-mean_pi)
+```
+
+``` r
+p_emp <- ggplot(data = pi_empirical, aes(snapshot, pi_relative)) +
+  geom_violin(aes(fill = snapshot)) +
+  geom_smooth(method = "lm", aes(group = 1), linetype = "dashed", linewidth = 2) +
+  geom_hline(yintercept = 1, linetype = "dashed", alpha = 0.75) +
+  coord_cartesian(ylim = c(0.5, 1.5)); p_emp
+#> `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](figures/unnamed-chunk-33-1.png)<!-- -->
+
+#### Figure \#1
+
+``` r
+pi_simulated_labels <-
+  pi_simulated %>%
+  mutate(
+    census_ratio = factor(paste("Ne : census ratio =", census_ratio)),
+    N_hunted = paste("N hunted =", N_hunted) %>% factor(., levels = gtools::mixedsort(unique(.))),
+  )
+
+p_sim_violins <-
+  pi_simulated_labels %>%
+  ggplot(aes(snapshot, pi_relative)) +
+  geom_violin(aes(fill = snapshot), color = NA, alpha = 0.8) +
+  geom_smooth(method = "lm", aes(group = 1), fullrange = TRUE,
+              color = "black", se = FALSE, linetype = "dashed") +
+  facet_wrap(N_hunted ~ census_ratio, nrow = 3) +
+  theme(legend.position = "right", axis.text.x = element_text(hjust = 1, angle = 45)) +
+  guides(fill = guide_legend("Time point")) +
+  labs(
+    x = "",
+    y = expression(paste(pi, " relative to the first time point")),
+    title = paste("Simulated nucleotide diversity across time assuming\nstarting size of 40.000 individuals")
+  ) +
+  coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
+#> `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](figures/unnamed-chunk-34-1.png)<!-- -->
+
+``` r
+
+ggsave("p_sim_violins.pdf", p_sim_violins, width = 7, height = 8)
+#> `geom_smooth()` using formula = 'y ~ x'
+```
+
+#### Figure \#2
+
+``` r
+markers <- tibble(metric = c("slope", "p-value", "R-squared"), value = c(0, 0.05, 0))
+
+lm_metrics <- pi_simulated_labels %>%
+  select(-pi, -pi_relative, -snapshot) %>%
+  unnest(lm) %>% 
+  pivot_longer(cols = c("r.squared", "slope", "p.value"), names_to = "metric") %>%
+  mutate(metric = case_when(
+    metric == "r.squared" ~ "R-squared",
+    metric == "p.value" ~ "p-value",
+    metric == "slope" ~ "slope"
+  )) %>%
+  distinct()
+
+lm_metrics %>%
+  ggplot(aes(value, color = metric)) +
+  geom_density() +
+  geom_vline(data = markers, aes(xintercept = value), linetype = "dashed") +
+  facet_wrap(metric ~ ., scales = "free", nrow = 1) +
+  theme(legend.position = "none") +
+  ggtitle("Distribution of metrics of the linear fit 'time ~ nucleotide diversity'")
+```
+
+![](figures/unnamed-chunk-35-1.png)<!-- -->
+
+#### Table \#1
+
+``` r
+lm_table <- pi_simulated_labels %>%
+  select(-pi, -pi_relative, -snapshot) %>%
+  unnest(lm) %>% 
+  mutate(N_hunted = as.numeric(gsub("N hunted = ", "", N_hunted)),
+         census_ratio = as.numeric(gsub("Ne : census ratio = ", "", census_ratio))) %>%
+  distinct() %>%
+  select(N_start, N_hunted, census_ratio, p.value, r.squared, slope) %>%
+  mutate(
+    p.value = format(p.value, digits = 2, nsmall = 2),
+    r.squared = format(r.squared, digits = 1),
+    slope = format(slope, digits = 1)
+  )
+
+library(gt)
+
+gt_table <- lm_table %>%
+  gt(auto_align = FALSE) %>%
+  cols_label(
+    N_start = md("**N start**"),
+    N_hunted = md("**N hunted**"),
+    census_ratio = md("**Ne : census ratio**"),
+    p.value = md("**p-value**"),
+    r.squared = md("**R-squared**"),
+    slope = md("**slope**")
+  )
+
+gtsave(gt_table, "table.png")
+```
+
+#### Figure \#3
+
+``` r
+p_model <- pi_beluga %>%
+  filter(N_start == 40000, N_hunted == 500, census_ratio == 1.0, engine == "msprime") %>%
+  { .$model[[1]] } %>%
+  plot_model()
+
+ggsave("p_model.pdf", p_model, width = 6, height = 7)
+```
