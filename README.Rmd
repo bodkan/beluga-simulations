@@ -278,6 +278,28 @@ p_p_vs_slope <-
 cowplot::plot_grid(p_p_vs_rsquared, p_p_vs_slope, nrow = 2)
 ```
 
+_msprime_ vs SLiM sanity check -- if slendr correctly interprets a compiled model, both simulation engines should give the same result in terms of simulated nucleotide diversities:
+
+```{r}
+pi_beluga %>%
+  unnest(pi) %>%
+  select(-model, -lm) %>%
+  group_by(N_start, N_hunted, census_ratio, engine) %>%
+  summarise(pi = mean(pi)) %>%
+  ungroup %>%
+  pivot_wider(names_from = "engine", values_from = "pi") %>%
+  mutate(N_start = paste("N start =", N_start)) %>%
+  # sample_frac(0.1) %>%
+  ggplot(aes(SLiM, msprime, color = factor(N_hunted))) +
+  geom_point(alpha = 0.8) +
+  geom_abline(slope = 1, linetype = "dashed", color = "black") +
+  facet_wrap(~ N_start, scales = "free", nrow = 1) +
+  theme(legend.position = "bottom") +
+  labs(x = expression(paste(pi, " as simulated by SLiM")),
+       y = expression(paste(pi, " as simulated by msprime")))
+```
+
+
 ### Empirical comparison
 
 ```{r}
@@ -285,12 +307,17 @@ library(dplyr)
 library(readr)
 
 pi_empirical <- read_tsv("pi_empirical.txt") %>%
-  pivot_longer(cols = everything(), names_to = "snapshot", names_prefix = "pi_", values_to = "pi") %>% 
-  mutate(snapshot = factor(snapshot,
+  pivot_longer(
+    cols = everything(),
+    names_to = "snapshot", names_prefix = "pi_",
+    values_to = "pi"
+  ) %>% 
+  mutate(snapshot = ifelse(snapshot == "Present", "Contemporary", snapshot),
+         snapshot = factor(snapshot,
                            levels = c("Time1", "Time2", "Time3", "Contemporary", "Anadyr", "Bristol", "Cook")))
 ```
 
-**Raw results from Figure 3a):**
+#### Raw results from Figure 3a
 
 ```{r}
 pi_empirical%>%
@@ -298,7 +325,7 @@ ggplot(aes(snapshot, pi, fill = snapshot)) +
   geom_violin()
 ```
 
-Subset to diversities only in Mackenzie belugas:
+Subset to empirical diversities only in Mackenzie belugas:
 
 ```{r}
 pi_empirical <- filter(pi_empirical, snapshot %in% c("Time1", "Time2", "Time3", "Contemporary"))
@@ -308,6 +335,12 @@ Normalize diversities relative to the first time snapshot:
 
 ```{r}
 pi_empirical$pi_relative <- pi_empirical$pi / mean(pi_empirical[pi_empirical$snapshot == "Time1", ]$pi)
+```
+
+```{r}
+pi_empirical%>%
+ggplot(aes(snapshot, pi_relative, fill = snapshot)) +
+  geom_violin()
 ```
 
 #### Empirical vs simulated diversities
@@ -371,7 +404,8 @@ p_sim_violins <-
   pi_simulated_labels %>%
   ggplot(aes(snapshot, pi_relative)) +
   geom_violin(aes(fill = snapshot), color = NA, alpha = 0.8) +
-  geom_smooth(method = "lm", aes(group = 1), se = FALSE, linetype = "dashed") +
+  geom_smooth(method = "lm", aes(group = 1), fullrange = TRUE,
+              color = "black", se = FALSE, linetype = "dashed") +
   facet_wrap(N_hunted ~ census_ratio, nrow = 3) +
   theme(legend.position = "right", axis.text.x = element_text(hjust = 1, angle = 45)) +
   guides(fill = guide_legend("Time point")) +
@@ -440,8 +474,6 @@ gt_table <- lm_table %>%
   )
 
 gtsave(gt_table, "table.png")
-
-system("open table.png")
 ```
 
 #### Figure #3
