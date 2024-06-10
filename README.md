@@ -11,12 +11,15 @@ are [here](results/).**
 
 ## Setup
 
-Running this will make sure all dependencies of the project will be
-setup before running anything else:
+First clone the entire project repository:
+
+    git clone https://github.com/bodkan/beluga-simulations
+    cd beluga-simulations
+
+Then, running this in your R console will install all project
+dependencies:
 
 ``` r
-install.packages("renv")
-
 renv::restore()
 ```
 
@@ -519,6 +522,15 @@ lm_table
 
 ``` r
 library(gt)
+library(webshot2)
+#> 
+#> Attaching package: 'webshot2'
+#> The following object is masked from 'package:slendr':
+#> 
+#>     resize
+```
+
+``` r
 
 gt_table <- lm_table %>%
   gt(auto_align = FALSE) %>%
