@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 )
 
 set.seed(42)
+
+dir.create("results", showWarnings = FALSE)
 ```
 
 ## Setup
@@ -416,7 +418,7 @@ p_sim_violins <-
   ) +
   coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
 
-ggsave("p_sim_violins.pdf", p_sim_violins, width = 7, height = 8)
+ggsave("results/sim_violins.pdf", p_sim_violins, width = 7, height = 8)
 ```
 
 Potentially a Figure #2 but the table below is the rare case where a plain text table works better:
@@ -474,7 +476,7 @@ gt_table <- lm_table %>%
     slope = md("**slope**")
   )
 
-gtsave(gt_table, "table.png")
+gtsave(gt_table, "results/table.png")
 ```
 
 #### Figure #3
@@ -485,5 +487,5 @@ p_model <- pi_beluga %>%
   { .$model[[1]] } %>%
   plot_model(); p_model
 
-ggsave("p_model.pdf", p_model, width = 6, height = 7)
+ggsave("results/model.pdf", p_model, width = 6, height = 7)
 ```

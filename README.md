@@ -451,7 +451,7 @@ p_sim_violins <-
 
 ``` r
 
-ggsave("p_sim_violins.pdf", p_sim_violins, width = 7, height = 8)
+ggsave("results/sim_violins.pdf", p_sim_violins, width = 7, height = 8)
 #> `geom_smooth()` using formula = 'y ~ x'
 ```
 
@@ -511,7 +511,7 @@ gt_table <- lm_table %>%
     slope = md("**slope**")
   )
 
-gtsave(gt_table, "table.png")
+gtsave(gt_table, "results/table.png")
 ```
 
 #### Figure \#3
@@ -527,5 +527,5 @@ p_model <- pi_beluga %>%
 
 ``` r
 
-ggsave("p_model.pdf", p_model, width = 6, height = 7)
+ggsave("results/model.pdf", p_model, width = 6, height = 7)
 ```
