@@ -419,7 +419,7 @@ p_sim_violins <-
 ggsave("p_sim_violins.pdf", p_sim_violins, width = 7, height = 8)
 ```
 
-#### Figure #2
+Potentially a Figure #2 but the table below is the rare case where a plain text table works better:
 
 ```{r}
 markers <- tibble(metric = c("slope", "p-value", "R-squared"), value = c(0, 0.05, 0))
@@ -473,8 +473,6 @@ gt_table <- lm_table %>%
     r.squared = md("**R-squared**"),
     slope = md("**slope**")
   )
-
-gt_table
 
 gtsave(gt_table, "table.png")
 ```
