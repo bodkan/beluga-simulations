@@ -2,6 +2,11 @@ Beluga nucleotide diversity
 ================
 2024-05-30
 
+**Note:** Most of the analyses in this document are exploratory. Code
+behind the final results for the paper can be found below under [this
+heading](#results-for-the-paper). The rendered result files themselves
+are [here](results/).
+
 ## Setup
 
 Running this will make sure all dependencies of the project will be
@@ -314,7 +319,7 @@ pi_beluga %>%
 
 ![](figures/unnamed-chunk-25-1.png)<!-- -->
 
-### Empirical comparison
+## Empirical comparison
 
 ``` r
 library(dplyr)
@@ -338,7 +343,7 @@ pi_empirical <- read_tsv("pi_empirical.txt") %>%
 #> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-#### Raw results from Figure 3a
+### Raw results from Figure 3a
 
 ``` r
 pi_empirical%>%
@@ -368,7 +373,7 @@ ggplot(aes(snapshot, pi_relative, fill = snapshot)) +
 
 ![](figures/unnamed-chunk-30-1.png)<!-- -->
 
-#### Empirical vs simulated diversities
+### Empirical vs simulated diversities
 
 Subset simulation results to those roughly matching the empirical data:
 
@@ -408,7 +413,11 @@ pi_simulated <-
   select(-mean_pi)
 ```
 
-#### Figure \#1
+## Results for the paper
+
+### Figure \#1
+
+**Rendered version is [here](results/sim_violins.pdf)**
 
 ``` r
 pi_simulated_labels <-
@@ -470,7 +479,11 @@ p_metrics <- lm_metrics %>%
   ggtitle("Distribution of metrics of the linear fit 'time ~ nucleotide diversity'")
 ```
 
-#### Table \#1
+### Table \#1
+
+**Rendered version is [here](results/table.png)**
+
+**Data is [here](results/table.tsv)**
 
 ``` r
 lm_table <- pi_simulated_labels %>%
@@ -504,7 +517,9 @@ write_tsv(lm_table, "results/table.tsv")
 gtsave(gt_table, "results/table.png")
 ```
 
-#### Figure \#3
+### Figure \#3
+
+**Rendered version is [here](results/model.pdf)**
 
 ``` r
 p_model <- pi_beluga %>%
