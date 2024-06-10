@@ -2,10 +2,12 @@ Beluga nucleotide diversity
 ================
 2024-05-30
 
-**Note:** Most of the analyses in this document are exploratory. Code
-behind the final results for the paper can be found below under [this
+## Note
+
+Most of the analyses in this document are exploratory. **The code behind
+the final results for the paper can be found below under [this
 heading](#results-for-the-paper). The rendered result files themselves
-are [here](results/).
+are [here](results/).**
 
 ## Setup
 

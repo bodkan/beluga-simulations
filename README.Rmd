@@ -24,7 +24,9 @@ set.seed(42)
 dir.create("results", showWarnings = FALSE)
 ```
 
-**Note:** Most of the analyses in this document are exploratory. Code behind the final results for the paper can be found below under [this heading](#results-for-the-paper). The rendered result files themselves are [here](results/).
+## Note
+
+Most of the analyses in this document are exploratory. **The code behind the final results for the paper can be found below under [this heading](#results-for-the-paper). The rendered result files themselves are [here](results/).**
 
 ## Setup
 
