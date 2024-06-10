@@ -435,7 +435,7 @@ lm_metrics <- pi_simulated_labels %>%
   )) %>%
   distinct()
 
-lm_metrics %>%
+p_metrics <- lm_metrics %>%
   ggplot(aes(value, color = metric)) +
   geom_density() +
   geom_vline(data = markers, aes(xintercept = value), linetype = "dashed") +
@@ -458,7 +458,8 @@ lm_table <- pi_simulated_labels %>%
     p.value = format(p.value, digits = 2, nsmall = 2),
     r.squared = format(r.squared, digits = 1),
     slope = format(slope, digits = 1)
-  )
+  ) %>%
+  arrange(N_start, N_hunted, census_ratio)
 
 library(gt)
 
@@ -473,6 +474,8 @@ gt_table <- lm_table %>%
     slope = md("**slope**")
   )
 
+gt_table
+
 gtsave(gt_table, "table.png")
 ```
 
@@ -482,7 +485,7 @@ gtsave(gt_table, "table.png")
 p_model <- pi_beluga %>%
   filter(N_start == 40000, N_hunted == 500, census_ratio == 1.0, engine == "msprime") %>%
   { .$model[[1]] } %>%
-  plot_model()
+  plot_model(); p_model
 
 ggsave("p_model.pdf", p_model, width = 6, height = 7)
 ```
