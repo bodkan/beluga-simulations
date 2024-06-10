@@ -411,7 +411,7 @@ p_sim_violins <-
   guides(fill = guide_legend("Time point")) +
   labs(
     x = "",
-    y = expression(paste(pi, " relative to the first time point")),
+    y = expression(paste(pi, " relative to time point #1")),
     title = paste("Simulated nucleotide diversity across time assuming\nstarting size of 40.000 individuals")
   ) +
   coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
