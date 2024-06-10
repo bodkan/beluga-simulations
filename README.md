@@ -500,6 +500,22 @@ lm_table <- pi_simulated_labels %>%
   ) %>%
   arrange(N_start, N_hunted, census_ratio)
 
+lm_table
+#> # A tibble: 9 × 6
+#>   N_start N_hunted census_ratio p.value r.squared slope   
+#>     <dbl>    <dbl>        <dbl> <chr>   <chr>     <chr>   
+#> 1   40000      250          0.3 0.42    3e-04     "-1e-09"
+#> 2   40000      250          0.5 0.92    5e-06     "-3e-10"
+#> 3   40000      250          0.7 0.25    7e-04     "-3e-09"
+#> 4   40000      500          0.3 0.66    1e-04     "-8e-10"
+#> 5   40000      500          0.5 0.91    7e-06     "-2e-10"
+#> 6   40000      500          0.7 0.32    5e-04     "-2e-09"
+#> 7   40000     1000          0.3 0.63    1e-04     " 1e-09"
+#> 8   40000     1000          0.5 1.00    8e-09     "-9e-12"
+#> 9   40000     1000          0.7 0.81    3e-05     " 6e-10"
+```
+
+``` r
 library(gt)
 
 gt_table <- lm_table %>%
@@ -528,7 +544,7 @@ p_model <- pi_beluga %>%
   plot_model(); p_model
 ```
 
-![](figures/unnamed-chunk-36-1.png)<!-- -->
+![](figures/unnamed-chunk-37-1.png)<!-- -->
 
 ``` r
 

@@ -465,6 +465,10 @@ lm_table <- pi_simulated_labels %>%
   ) %>%
   arrange(N_start, N_hunted, census_ratio)
 
+lm_table
+```
+
+```{r}
 library(gt)
 
 gt_table <- lm_table %>%
