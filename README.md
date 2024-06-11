@@ -424,6 +424,15 @@ pi_simulated <-
 
 **Rendered version is [here](results/sim_violins.pdf)**
 
+**Caption:** *Distributions of nucleotide diversity across four temporal
+snapshots of a simulated beluga population corresponding to time points
+in Figure 3a. Each panel displays results from each individual
+simulation scenario. The starting size of the population was always
+40.000. The number of individuals removed from the population each
+generation due to hunting is indicated in the title of each panel, as is
+the ratio used to convert these two quantities to the $N_e$ simulated in
+each scenario.*
+
 ``` r
 pi_simulated_labels <-
   pi_simulated %>%
@@ -444,7 +453,7 @@ p_sim_violins <-
   labs(
     x = "",
     y = expression(paste(pi, " relative to time point #1")),
-    title = paste("Simulated nucleotide diversity across time assuming\nstarting size of 40.000 individuals")
+    # title = paste("Simulated nucleotide diversity across time assuming\nstarting size of 40.000 individuals")
   ) +
   coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
 #> `geom_smooth()` using formula = 'y ~ x'
@@ -489,6 +498,10 @@ p_metrics <- lm_metrics %>%
 **Rendered version is [here](results/table.png)**
 
 **Data is [here](results/table.tsv)**
+
+**Caption:** Metrics of the linear regression fit of simulated
+nucleotide diversity as a function of time for each simulation scenario
+shown in panels in Figure Sx.\_
 
 ``` r
 lm_table <- pi_simulated_labels %>%
@@ -551,6 +564,12 @@ gtsave(gt_table, "results/table.png")
 
 **Rendered version is [here](results/model.pdf)**
 
+**Caption:** A schematic representation of a *slendr* model used to
+simulate the effect of hunting on the beluga demographic history. The
+starting size of the population was always 40.000. The number of
+individuals removed from the population each generation due to hunting
+is indicated by each “step” decrease in population size.\_
+
 ``` r
 p_model <- pi_beluga %>%
   filter(N_start == 40000, N_hunted == 500, census_ratio == 1.0, engine == "msprime") %>%
@@ -563,4 +582,26 @@ p_model <- pi_beluga %>%
 ``` r
 
 ggsave("results/model.pdf", p_model, width = 6, height = 7)
+```
+
+### Total count of simulation scenarios
+
+``` r
+pi_simulated %>%
+  group_by(N_start, N_hunted, census_ratio) %>%
+  slice(1) %>%
+  select(-c(pi, lm, snapshot, pi_relative))
+#> # A tibble: 9 × 3
+#> # Groups:   N_start, N_hunted, census_ratio [9]
+#>   N_start N_hunted census_ratio
+#>     <dbl>    <dbl>        <dbl>
+#> 1   40000      250          0.3
+#> 2   40000      250          0.5
+#> 3   40000      250          0.7
+#> 4   40000      500          0.3
+#> 5   40000      500          0.5
+#> 6   40000      500          0.7
+#> 7   40000     1000          0.3
+#> 8   40000     1000          0.5
+#> 9   40000     1000          0.7
 ```
