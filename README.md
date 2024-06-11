@@ -572,7 +572,7 @@ is indicated by each “step” decrease in population size.*
 
 ``` r
 p_model <- pi_beluga %>%
-  filter(N_start == 40000, N_hunted == 500, census_ratio == 1.0, engine == "msprime") %>%
+  filter(N_start == 40000, N_hunted == 250, census_ratio == 1.0, engine == "msprime") %>%
   { .$model[[1]] } %>%
   plot_model(); p_model
 ```
