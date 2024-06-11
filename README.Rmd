@@ -459,7 +459,7 @@ p_metrics <- lm_metrics %>%
 
 **Data is [here](results/table.tsv)**
 
-**Caption:** Metrics of the linear regression fit of simulated nucleotide diversity as a function of time for each simulation scenario shown in panels in Figure Sx._
+**Caption:** _Metrics of the linear regression fit of simulated nucleotide diversity as a function of time for each simulation scenario shown in panels in Figure Sx._
 
 ```{r}
 lm_table <- pi_simulated_labels %>%
@@ -502,7 +502,7 @@ gtsave(gt_table, "results/table.png")
 
 **Rendered version is [here](results/model.pdf)**
 
-**Caption:** A schematic representation of a _slendr_ model used to simulate the effect of hunting on the beluga demographic history. The starting size of the population was always 40.000. The number of individuals removed from the population each generation due to hunting is indicated by each "step" decrease in population size._
+**Caption:** _A schematic representation of a _slendr_ model used to simulate the effect of hunting on the beluga demographic history. The starting size of the population was always 40.000. The number of individuals removed from the population each generation due to hunting is indicated by each "step" decrease in population size._
 
 ```{r}
 p_model <- pi_beluga %>%
