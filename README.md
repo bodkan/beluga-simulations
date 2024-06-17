@@ -388,15 +388,15 @@ pi_simulated <- pi_beluga %>%
   unnest(pi) %>%
   select(-model, -engine) %>%
   mutate(snapshot = case_when(
-    time >= 1290 & time <= 1440 ~ "Snapshot #1",
-    time >= 1450 & time <= 1650 ~ "Snapshot #2",
-    time >= 1800 & time <= 1870 ~ "Snapshot #3",
+    time >= 1290 & time <= 1440 ~ "1290-1440 CE",
+    time >= 1450 & time <= 1650 ~ "1450-1650 CE",
+    time >= 1800 & time <= 1870 ~ "1800-1870 CE",
     time >= 1950 & time <= 2025 ~ "Contemporary",
     TRUE ~ "other"
   )) %>%
   filter(snapshot != "other") %>%
   mutate(snapshot = factor(snapshot,
-                         levels = c("Snapshot #1", "Snapshot #2", "Snapshot #3", "Contemporary"))) %>%
+                         levels = c("1290-1440 CE", "1450-1650 CE", "1800-1870 CE", "Contemporary"))) %>%
   select(-name, -pop, -time) %>%
   filter( # filter based on Mikkel's ideas for the parameter grid
     N_start == 40000,
@@ -412,7 +412,7 @@ first respective snapshot:
 pi_simulated <-
   pi_simulated %>%
   group_by(N_start, N_hunted, census_ratio) %>%
-  mutate(mean_pi = mean(pi[snapshot == "Snapshot #1"])) %>%
+  mutate(mean_pi = mean(pi[snapshot == "1290-1440 CE"])) %>%
   ungroup() %>%
   mutate(pi_relative = pi / mean_pi) %>%
   select(-mean_pi)
@@ -431,7 +431,10 @@ simulation scenario. The starting size of the population was always
 40.000. The number of individuals removed from the population each
 generation due to hunting is indicated in the title of each panel, as is
 the ratio used to convert these two quantities to the $N_e$ simulated in
-each scenario.*
+each scenario. Nucleotide diversity at each time point is normalized by
+the mean diversity in the first time period. The black dashed line
+indicates a linear regression fit of nucleotide diversity as a function
+of time in each simulated scenario.*
 
 ``` r
 pi_simulated_labels <-
@@ -445,14 +448,15 @@ p_sim_violins <-
   pi_simulated_labels %>%
   ggplot(aes(snapshot, pi_relative)) +
   geom_violin(aes(fill = snapshot), color = NA, alpha = 0.8) +
-  geom_smooth(method = "lm", aes(group = 1), fullrange = TRUE,
+  geom_smooth(method = "lm", aes(group = 1), fullrange = TRUE, linewidth = 0.5,
               color = "black", se = FALSE, linetype = "dashed") +
   facet_wrap(N_hunted ~ census_ratio, nrow = 3) +
-  theme(legend.position = "right", axis.text.x = element_text(hjust = 1, angle = 45)) +
+  theme_minimal() +
+  theme(legend.position = "none", axis.text.x = element_text(hjust = 1, angle = 45)) +
   guides(fill = guide_legend("Time point")) +
   labs(
     x = "",
-    y = expression(paste(pi, " relative to time point #1")),
+    y = "Relative nucleotide diversity",
     # title = paste("Simulated nucleotide diversity across time assuming\nstarting size of 40.000 individuals")
   ) +
   coord_cartesian(ylim = c(0.8, 1.15)); p_sim_violins
